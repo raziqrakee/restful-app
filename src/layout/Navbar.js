@@ -6,7 +6,7 @@ export default function Navbar() {
     <div>
       <nav className="navbar navbar-expand-lg bg-primary navbar-dark">
         <div className="container-fluid">
-          <a className="navbar-brand" href="#">
+          <a className="navbar-brand" href="/">
             Restful Web App
           </a>
           <button

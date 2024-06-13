@@ -25,6 +25,8 @@ export default function Home() {
     } catch (error) {
       console.error("Error deleting user:", error);
     }
+    await axios.delete(`http://localhost:8080/user/${id}`);
+    loadUsers();
   };
 
   return (
@@ -43,7 +45,9 @@ export default function Home() {
           </thead>
           <tbody>
             {users.map((user, index) => (
+
               <tr key={user.id}>
+              <tr key={index}>
                 <th scope="row">{index + 1}</th>
                 <td>{user.name}</td>
                 <td>{user.username}</td>

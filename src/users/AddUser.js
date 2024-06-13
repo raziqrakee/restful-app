@@ -20,7 +20,7 @@ export default function AddUser() {
   const onSubmit = async (e) => {
     e.preventDefault();
     await axios.post("http://localhost:8080/user", user);
-    navigate("/");
+    navigate("/Home");
   };
 
   return (
@@ -81,7 +81,7 @@ export default function AddUser() {
             >
               Reset
             </button>
-            <Link to="/" className="btn btn-outline-danger mx-2">
+            <Link to="/Home" className="btn btn-outline-danger mx-2">
               Cancel
             </Link>
           </form>

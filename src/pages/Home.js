@@ -10,11 +10,21 @@ export default function Home() {
   }, []);
 
   const loadUsers = async () => {
-    const result = await axios.get("http://localhost:8080/users");
-    setUsers(result.data);
+    try {
+      const result = await axios.get("http://localhost:8080/users");
+      setUsers(result.data);
+    } catch (error) {
+      console.error("Error loading users:", error);
+    }
   };
 
   const deleteUser = async (id) => {
+    try {
+      await axios.delete(`http://localhost:8080/user/${id}`);
+      loadUsers();
+    } catch (error) {
+      console.error("Error deleting user:", error);
+    }
     await axios.delete(`http://localhost:8080/user/${id}`);
     loadUsers();
   };
@@ -22,8 +32,9 @@ export default function Home() {
   return (
     <div className="container">
       <div className="py-4">
+        <h1>Home Page</h1>
         <table className="table border shadow">
-          <thead>
+          <thead className="thead-dark">
             <tr>
               <th scope="col">#</th>
               <th scope="col">Name</th>
@@ -34,6 +45,8 @@ export default function Home() {
           </thead>
           <tbody>
             {users.map((user, index) => (
+
+              <tr key={user.id}>
               <tr key={index}>
                 <th scope="row">{index + 1}</th>
                 <td>{user.name}</td>

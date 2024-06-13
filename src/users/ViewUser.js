@@ -42,7 +42,7 @@ export default function ViewUser() {
               </ul>
             </div>
           </div>
-          <button className="btn btn-primary mt-3" onClick={() => navigate("/")}>
+          <button className="btn btn-primary mt-3" onClick={() => navigate("/Home")}>
             Back
           </button>
         </div>

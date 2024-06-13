@@ -85,7 +85,7 @@ export default function EditUser() {
             <button type="submit" className="btn btn-outline-primary">
               Save
             </button>
-            <Link to="/" className="btn btn-outline-danger mx-2">
+            <Link to="/Home" className="btn btn-outline-danger mx-2">
               Cancel
             </Link>
           </form>

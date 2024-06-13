@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Link, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 export default function Home() {
   const [users, setUsers] = useState([]);
-
-  const { id } = useParams();
 
   useEffect(() => {
     loadUsers();
@@ -16,14 +14,14 @@ export default function Home() {
     setUsers(result.data);
   };
 
-  const deleteUser = async () => {
+  const deleteUser = async (id) => {
     await axios.delete(`http://localhost:8080/user/${id}`);
     loadUsers();
   };
 
   return (
-    <div classNameName="container">
-      <div classNameName="py-4">
+    <div className="container">
+      <div className="py-4">
         <table className="table border shadow">
           <thead>
             <tr>
@@ -36,10 +34,8 @@ export default function Home() {
           </thead>
           <tbody>
             {users.map((user, index) => (
-              <tr>
-                <th scope="row" key={index}>
-                  {index + 1}
-                </th>
+              <tr key={index}>
+                <th scope="row">{index + 1}</th>
                 <td>{user.name}</td>
                 <td>{user.username}</td>
                 <td>{user.email}</td>

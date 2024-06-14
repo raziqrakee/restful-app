@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { Modal, Button } from 'react-bootstrap';
 
 export default function EditUser() {
   const [user, setUser] = useState({
@@ -8,6 +9,9 @@ export default function EditUser() {
     username: "",
     email: "",
   });
+
+  const [show, setShow] = useState(false);
+  const [message, setMessage] = useState("");
 
   let navigate = useNavigate();
 
@@ -23,10 +27,21 @@ export default function EditUser() {
     loadUser();
   }, []);
 
+  const handleClose = () => {
+    setShow(false);
+    navigate("/Home");
+  };
+
   const onSubmit = async (e) => {
     e.preventDefault();
-    await axios.put(`http://localhost:8080/user/${id}`, user);
-    navigate("/Home");
+    try {
+      await axios.put(`http://localhost:8080/user/${id}`, user);
+      setMessage("User updated successfully!");
+      setShow(true);
+    } catch (error) {
+      setMessage("Error updating user. Please try again.");
+      setShow(true);
+    }
   };
 
   const loadUser = async () => {
@@ -89,6 +104,19 @@ export default function EditUser() {
               Cancel
             </Link>
           </form>
+
+          {/* Modal */}
+          <Modal show={show} onHide={handleClose}>
+            <Modal.Header closeButton>
+              <Modal.Title>Message</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>{message}</Modal.Body>
+            <Modal.Footer>
+              <Button variant="primary" onClick={handleClose}>
+                OK
+              </Button>
+            </Modal.Footer>
+          </Modal>
         </div>
       </div>
     </div>

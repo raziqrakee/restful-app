@@ -1,9 +1,14 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { Modal, Button } from 'react-bootstrap';
 
 export default function Home() {
   const [users, setUsers] = useState([]);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [message, setMessage] = useState("");
+  const [deleteUserId, setDeleteUserId] = useState(null);
 
   useEffect(() => {
     loadUsers();
@@ -18,14 +23,25 @@ export default function Home() {
     }
   };
 
-  const deleteUser = async (id) => {
+  const confirmDeleteUser = (id) => {
+    setDeleteUserId(id);
+    setShowConfirm(true);
+  };
+
+  const handleDeleteUser = async () => {
     try {
-      await axios.delete(`http://localhost:8080/user/${id}`);
+      await axios.delete(`http://localhost:8080/user/${deleteUserId}`);
+      setMessage("User deleted successfully!");
+      setShowSuccess(true);
+      setShowConfirm(false);
       loadUsers();
     } catch (error) {
       console.error("Error deleting user:", error);
     }
   };
+
+  const handleCloseConfirm = () => setShowConfirm(false);
+  const handleCloseSuccess = () => setShowSuccess(false);
 
   return (
     <div className="container">
@@ -63,7 +79,7 @@ export default function Home() {
                   </Link>
                   <button
                     className="btn btn-danger mx-2"
-                    onClick={() => deleteUser(user.id)}
+                    onClick={() => confirmDeleteUser(user.id)}
                   >
                     Delete
                   </button>
@@ -73,6 +89,35 @@ export default function Home() {
           </tbody>
         </table>
       </div>
+
+      {/* Confirmation Modal */}
+      <Modal show={showConfirm} onHide={handleCloseConfirm}>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm Deletion</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Are you sure you want to delete this user?</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseConfirm}>
+            Cancel
+          </Button>
+          <Button variant="danger" onClick={handleDeleteUser}>
+            Delete
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Success Modal */}
+      <Modal show={showSuccess} onHide={handleCloseSuccess}>
+        <Modal.Header closeButton>
+          <Modal.Title>Message</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>{message}</Modal.Body>
+        <Modal.Footer>
+          <Button variant="primary" onClick={handleCloseSuccess}>
+            OK
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { Modal, Button } from "react-bootstrap";
 
 export default function EditUser() {
   const [user, setUser] = useState({
@@ -9,10 +10,11 @@ export default function EditUser() {
     email: "",
   });
 
+  const [errorMessage, setErrorMessage] = useState("");
+  const [showErrorModal, setShowErrorModal] = useState(false);
+
   let navigate = useNavigate();
-
   const { id } = useParams();
-
   const { name, username, email } = user;
 
   const onInputChange = (e) => {
@@ -25,14 +27,26 @@ export default function EditUser() {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    await axios.put(`http://localhost:8080/user/${id}`, user);
-    navigate("/Home");
+    try {
+      await axios.put(`http://localhost:8080/user/${id}`, user);
+      navigate("/Home");
+    } catch (error) {
+      setErrorMessage("Failed to update user. Please try again.");
+      setShowErrorModal(true);
+    }
   };
 
   const loadUser = async () => {
-    const result = await axios.get(`http://localhost:8080/user/${id}`);
-    setUser(result.data);
+    try {
+      const result = await axios.get(`http://localhost:8080/user/${id}`);
+      setUser(result.data);
+    } catch (error) {
+      setErrorMessage("Failed to load user details. Please try again.");
+      setShowErrorModal(true);
+    }
   };
+
+  const handleClose = () => setShowErrorModal(false);
 
   return (
     <div className="container">
@@ -91,6 +105,18 @@ export default function EditUser() {
           </form>
         </div>
       </div>
+
+      <Modal show={showErrorModal} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Error</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>{errorMessage}</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }

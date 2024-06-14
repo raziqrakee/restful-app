@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
-import { Modal, Button } from "react-bootstrap";
+import { Modal, Button } from 'react-bootstrap';
+
 
 export default function AddUser() {
   const [user, setUser] = useState({
@@ -10,8 +11,12 @@ export default function AddUser() {
     email: "",
   });
 
+
+  const [show, setShow] = useState(false);
+  const [message, setMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [showErrorModal, setShowErrorModal] = useState(false);
+
 
   let navigate = useNavigate();
 
@@ -21,14 +26,26 @@ export default function AddUser() {
     setUser({ ...user, [e.target.name]: e.target.value });
   };
 
+  const handleClose = () => {
+    setShow(false);
+    navigate("/Home");
+  };
+
   const onSubmit = async (e) => {
     e.preventDefault();
     try {
       await axios.post("http://localhost:8080/user", user);
+
+      setMessage("User added successfully!");
+      setShow(true);
+    } catch (error) {
+      setMessage("Error adding user. Please try again.");
+      setShow(true);
       navigate("/Home");
     } catch (error) {
       setErrorMessage("Failed to add user. Please try again.");
       setShowErrorModal(true);
+
     }
   };
 
@@ -97,6 +114,16 @@ export default function AddUser() {
             </Link>
           </form>
 
+
+          {/* Modal */}
+          <Modal show={show} onHide={handleClose}>
+            <Modal.Header closeButton>
+              <Modal.Title>Message</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>{message}</Modal.Body>
+            <Modal.Footer>
+              <Button variant="primary" onClick={handleClose}>
+                OK
           <Modal show={showErrorModal} onHide={handleClose}>
             <Modal.Header closeButton>
               <Modal.Title>Error</Modal.Title>

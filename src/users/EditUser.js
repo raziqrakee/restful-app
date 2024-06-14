@@ -3,6 +3,7 @@ import axios from "axios";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Modal, Button } from 'react-bootstrap';
 
+
 export default function EditUser() {
   const [user, setUser] = useState({
     name: "",
@@ -10,13 +11,17 @@ export default function EditUser() {
     email: "",
   });
 
+
   const [show, setShow] = useState(false);
   const [message, setMessage] = useState("");
 
   let navigate = useNavigate();
+  const [errorMessage, setErrorMessage] = useState("");
+  const [showErrorModal, setShowErrorModal] = useState(false);
 
+
+  let navigate = useNavigate();
   const { id } = useParams();
-
   const { name, username, email } = user;
 
   const onInputChange = (e) => {
@@ -41,13 +46,24 @@ export default function EditUser() {
     } catch (error) {
       setMessage("Error updating user. Please try again.");
       setShow(true);
+      navigate("/Home");
+    } catch (error) {
+      setErrorMessage("Failed to update user. Please try again.");
+      setShowErrorModal(true);
     }
   };
 
   const loadUser = async () => {
-    const result = await axios.get(`http://localhost:8080/user/${id}`);
-    setUser(result.data);
+    try {
+      const result = await axios.get(`http://localhost:8080/user/${id}`);
+      setUser(result.data);
+    } catch (error) {
+      setErrorMessage("Failed to load user details. Please try again.");
+      setShowErrorModal(true);
+    }
   };
+
+  const handleClose = () => setShowErrorModal(false);
 
   return (
     <div className="container">
@@ -119,6 +135,18 @@ export default function EditUser() {
           </Modal>
         </div>
       </div>
+
+      <Modal show={showErrorModal} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Error</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>{errorMessage}</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }

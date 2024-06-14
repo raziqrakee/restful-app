@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
+import { Modal, Button } from "react-bootstrap";
 
 export default function ViewUser() {
   const [user, setUser] = useState({
@@ -8,6 +9,9 @@ export default function ViewUser() {
     username: "",
     email: "",
   });
+
+  const [errorMessage, setErrorMessage] = useState("");
+  const [showErrorModal, setShowErrorModal] = useState(false);
 
   const { id } = useParams();
   const navigate = useNavigate();
@@ -17,9 +21,16 @@ export default function ViewUser() {
   }, []);
 
   const loadUser = async () => {
-    const result = await axios.get(`http://localhost:8080/user/${id}`);
-    setUser(result.data);
+    try {
+      const result = await axios.get(`http://localhost:8080/user/${id}`);
+      setUser(result.data);
+    } catch (error) {
+      setErrorMessage("Failed to load user details. Please try again.");
+      setShowErrorModal(true);
+    }
   };
+
+  const handleClose = () => setShowErrorModal(false);
 
   return (
     <div className="container">
@@ -47,6 +58,18 @@ export default function ViewUser() {
           </button>
         </div>
       </div>
+
+      <Modal show={showErrorModal} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Error</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>{errorMessage}</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }

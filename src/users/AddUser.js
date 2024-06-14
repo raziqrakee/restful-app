@@ -3,7 +3,6 @@ import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { Modal, Button } from 'react-bootstrap';
 
-
 export default function AddUser() {
   const [user, setUser] = useState({
     name: "",
@@ -11,12 +10,10 @@ export default function AddUser() {
     email: "",
   });
 
-
   const [show, setShow] = useState(false);
   const [message, setMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [showErrorModal, setShowErrorModal] = useState(false);
-
 
   let navigate = useNavigate();
 
@@ -26,48 +23,42 @@ export default function AddUser() {
     setUser({ ...user, [e.target.name]: e.target.value });
   };
 
-  const handleClose = () => {
+  const handleSuccessClose = () => {
     setShow(false);
     navigate("/Home");
   };
+
+  const handleErrorClose = () => setShowErrorModal(false);
 
   const onSubmit = async (e) => {
     e.preventDefault();
     try {
       await axios.post("http://localhost:8080/user", user);
-
       setMessage("User added successfully!");
       setShow(true);
     } catch (error) {
-      setMessage("Error adding user. Please try again.");
-      setShow(true);
-      navigate("/Home");
-    } catch (error) {
-      setErrorMessage("Failed to add user. Please try again.");
+      setErrorMessage("Error adding user. Please try again.");
       setShowErrorModal(true);
-
     }
   };
-
-  const handleClose = () => setShowErrorModal(false);
 
   return (
     <div className="container">
       <div className="row">
         <div className="col-md-6 offset-md-3 border rounded p-4 mt-2 shadow">
           <h2 className="text-center m-4">Register User</h2>
-          <form onSubmit={(e) => onSubmit(e)}>
+          <form onSubmit={onSubmit}>
             <div className="mb-3">
               <label htmlFor="Name" className="form-label">
                 Name
               </label>
               <input
-                type={"text"}
+                type="text"
                 className="form-control"
                 placeholder="Enter your name"
                 name="name"
                 value={name}
-                onChange={(e) => onInputChange(e)}
+                onChange={onInputChange}
                 required
               />
             </div>
@@ -76,12 +67,12 @@ export default function AddUser() {
                 Username
               </label>
               <input
-                type={"text"}
+                type="text"
                 className="form-control"
                 placeholder="Enter your username"
                 name="username"
                 value={username}
-                onChange={(e) => onInputChange(e)}
+                onChange={onInputChange}
                 required
               />
             </div>
@@ -90,12 +81,12 @@ export default function AddUser() {
                 Email
               </label>
               <input
-                type={"text"}
+                type="text"
                 className="form-control"
                 placeholder="Enter your email address"
                 name="email"
                 value={email}
-                onChange={(e) => onInputChange(e)}
+                onChange={onInputChange}
                 required
               />
             </div>
@@ -114,23 +105,27 @@ export default function AddUser() {
             </Link>
           </form>
 
-
-          {/* Modal */}
-          <Modal show={show} onHide={handleClose}>
+          {/* Success Modal */}
+          <Modal show={show} onHide={handleSuccessClose}>
             <Modal.Header closeButton>
               <Modal.Title>Message</Modal.Title>
             </Modal.Header>
             <Modal.Body>{message}</Modal.Body>
             <Modal.Footer>
-              <Button variant="primary" onClick={handleClose}>
+              <Button variant="primary" onClick={handleSuccessClose}>
                 OK
-          <Modal show={showErrorModal} onHide={handleClose}>
+              </Button>
+            </Modal.Footer>
+          </Modal>
+
+          {/* Error Modal */}
+          <Modal show={showErrorModal} onHide={handleErrorClose}>
             <Modal.Header closeButton>
               <Modal.Title>Error</Modal.Title>
             </Modal.Header>
             <Modal.Body>{errorMessage}</Modal.Body>
             <Modal.Footer>
-              <Button variant="secondary" onClick={handleClose}>
+              <Button variant="secondary" onClick={handleErrorClose}>
                 Close
               </Button>
             </Modal.Footer>
